@@ -7,7 +7,6 @@
           filled
           dense
           v-model="file"
-          @update:model-value="filePick"
           accept=".xlsx"
         ></q-file>
       </div>
