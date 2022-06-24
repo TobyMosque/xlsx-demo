@@ -14,7 +14,7 @@
         <q-btn
           @click="download"
           dense
-          primary
+          color="primary"
           label="Download and Pick"
         ></q-btn>
       </div>
@@ -22,7 +22,7 @@
         <q-select :options="names" filled dense v-model="name"></q-select>
       </div>
       <div class="col-6">
-        <q-btn @click="readSheet" primary label="Read Sheet"></q-btn>
+        <q-btn @click="readSheet" color="primary" label="Read Sheet"></q-btn>
       </div>
     </div>
   </q-page>
