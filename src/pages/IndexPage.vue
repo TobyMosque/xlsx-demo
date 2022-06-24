@@ -5,18 +5,25 @@
         <q-file
           label="Pick a File"
           filled
-          v-model="files"
+          dense
+          v-model="file"
+          @update:model-value="filePick"
           accept=".xlsx"
         ></q-file>
       </div>
       <div class="col-6">
-        <q-btn @click="download" dense label="Download and Pick"></q-btn>
+        <q-btn
+          @click="download"
+          dense
+          primary
+          label="Download and Pick"
+        ></q-btn>
       </div>
       <div class="col-6">
         <q-select :options="names" filled dense v-model="name"></q-select>
       </div>
       <div class="col-6">
-        <q-btn @click="readSheet" label="Read Sheet"></q-btn>
+        <q-btn @click="readSheet" primary label="Read Sheet"></q-btn>
       </div>
     </div>
   </q-page>
@@ -36,24 +43,22 @@ import { useQuasar } from 'quasar';
 import { read, WorkBook } from 'xlsx';
 
 const quasar = useQuasar();
-const files = ref<File[]>();
+const file = ref<File>();
 const wooksheet = ref<WorkBook>();
 const api = inject(apiKey);
-const name = ref('Sheet1');
+const name = ref('');
 
-watch(
-  () => files.value,
-  async () => {
-    wooksheet.value = undefined;
-    if (!files.value || !files.value.length) {
-      return;
-    }
+async function filePick() {
+  wooksheet.value = undefined;
+  if (!file.value) {
+    return;
+  }
 
-    const array = await files.value[0].arrayBuffer();
-    wooksheet.value = read(array, { type: 'array' });
-  },
-  { immediate: true }
-);
+  const array = await file.value.arrayBuffer();
+  wooksheet.value = read(array, { type: 'array' });
+}
+
+watch(() => file.value, filePick, { immediate: true });
 
 const names = computed(() => {
   if (!wooksheet.value) {
@@ -69,15 +74,13 @@ async function download() {
   const { data } = await api.get<File>('file_example_XLSX_1000.xlsx', {
     responseType: 'blob',
   });
-  var file = new File([data], 'file_example_XLSX_1000.xlsx');
-  files.value = [file];
+  file.value = new File([data], 'file_example_XLSX_1000.xlsx');
 }
 
 function readSheet() {
-  if (!wooksheet.value || !name.value) {
-    quasar.notify({ message: 'Please, Pick a Sheet' });
+  if (!wooksheet.value || !name.value || !wooksheet.value.Sheets[name.value]) {
+    quasar.notify({ message: 'Please, Pick a Sheet', color: 'warning' });
     return;
   }
-  console.log(wooksheet.value?.Sheets[name.value]);
 }
 </script>
