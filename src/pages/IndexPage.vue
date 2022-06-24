@@ -82,5 +82,6 @@ function readSheet() {
     quasar.notify({ message: 'Please, Pick a Sheet', color: 'warning' });
     return;
   }
+  console.log(wooksheet.value.Sheets[name.value]);
 }
 </script>
